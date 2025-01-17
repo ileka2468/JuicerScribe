@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Dark mode transitions */
+.dark {
+  color-scheme: dark;
+}
+
+* {
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+/* Input, Textarea, and Select Base Styles */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  @apply px-4 py-3 min-h-[44px] w-full rounded-md border-gray-300 shadow-sm;
+  @apply dark:border-gray-600 dark:bg-gray-700 dark:text-white;
+  @apply focus:border-indigo-500 focus:ring-indigo-500;
+}
+
+textarea {
+  @apply min-h-[120px] py-4 leading-relaxed;
+  @apply resize-y;
+}
+
+/* Specific styles for the transcription textarea */
+textarea#transcription {
+  @apply min-h-[300px] text-base leading-relaxed;
+}
