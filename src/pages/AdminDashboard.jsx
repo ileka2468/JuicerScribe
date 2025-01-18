@@ -14,7 +14,7 @@ export default function AdminDashboard() {
   });
   const [baseRate, setBaseRate] = useState("0.50");
   const [updatingRate, setUpdatingRate] = useState(false);
-  const [processingPayment, setProcessingPayment] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState({});
   const [activeTab, setActiveTab] = useState("videos");
 
   useEffect(() => {
@@ -38,10 +38,10 @@ export default function AdminDashboard() {
           .from("transcriptions")
           .select(
             `
-          *,
-          videos (*),
-          profiles (username)
-        `
+            *,
+            videos (*),
+            profiles (username)
+          `
           )
           .eq("status", "SUBMITTED")
           .order("created_at", { ascending: false });
@@ -119,7 +119,9 @@ export default function AdminDashboard() {
     qualityScore = null,
     feedback = ""
   ) {
-    setProcessingPayment(true);
+    // Set processing state for this specific transcription
+    setProcessingPayment((prev) => ({ ...prev, [transcriptionId]: true }));
+
     try {
       // Validate quality score for approvals
       if (status === "APPROVED") {
@@ -141,7 +143,7 @@ export default function AdminDashboard() {
         }
       }
 
-      // First approve the transcription
+      // First review the transcription
       const { error: reviewError } = await supabase.rpc(
         "review_transcription",
         {
@@ -156,19 +158,26 @@ export default function AdminDashboard() {
 
       // If approved, process the payment
       if (status === "APPROVED") {
+        const session = await supabase.auth.getSession();
+        const accessToken = session.data.session?.access_token;
+
+        if (!accessToken) {
+          throw new Error("No access token available");
+        }
+
         const { data: transferData, error: transferError } =
           await supabase.functions.invoke("process-transfer", {
             body: { transcription_id: transcriptionId },
             headers: {
-              Authorization: `Bearer ${
-                (
-                  await supabase.auth.getSession()
-                ).data.session?.access_token
-              }`,
+              Authorization: `Bearer ${accessToken}`,
             },
           });
 
         if (transferError) throw transferError;
+
+        if (!transferData?.success) {
+          throw new Error("Transfer failed");
+        }
 
         toast.success(
           `Transcription approved and payment of $${transferData.amount} processed`
@@ -177,12 +186,20 @@ export default function AdminDashboard() {
         toast.success(`Transcription ${status.toLowerCase()}`);
       }
 
-      fetchDashboardData();
+      // Refresh the dashboard data
+      await fetchDashboardData();
     } catch (error) {
-      toast.error(error.message || "Failed to update transcription");
-      console.error("Error:", error);
+      console.error("Review error:", error);
+      toast.error(
+        error.message || "Failed to process transcription. Please try again."
+      );
     } finally {
-      setProcessingPayment(false);
+      // Clear processing state for this transcription
+      setProcessingPayment((prev) => {
+        const newState = { ...prev };
+        delete newState[transcriptionId];
+        return newState;
+      });
     }
   }
 
@@ -258,6 +275,11 @@ export default function AdminDashboard() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Base Rate ($ per 30 seconds)
                     <div className="mt-1 relative rounded-md shadow-sm">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          $
+                        </span>
+                      </div>
                       <input
                         type="number"
                         step="0.01"
@@ -445,10 +467,12 @@ export default function AdminDashboard() {
                             );
                           }
                         }}
-                        disabled={processingPayment}
+                        disabled={processingPayment[transcription.id]}
                         className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
                       >
-                        {processingPayment ? "Processing..." : "Approve"}
+                        {processingPayment[transcription.id]
+                          ? "Processing..."
+                          : "Approve"}
                       </button>
                       <button
                         onClick={() => {
@@ -464,7 +488,7 @@ export default function AdminDashboard() {
                             );
                           }
                         }}
-                        disabled={processingPayment}
+                        disabled={processingPayment[transcription.id]}
                         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
                       >
                         Reject
