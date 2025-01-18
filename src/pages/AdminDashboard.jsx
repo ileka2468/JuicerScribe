@@ -13,21 +13,45 @@ export default function AdminDashboard() {
     duration: "",
   });
   const [baseRate, setBaseRate] = useState("0.50");
+  const [workingCapital, setWorkingCapital] = useState("0.00");
   const [updatingRate, setUpdatingRate] = useState(false);
+  const [updatingCapital, setUpdatingCapital] = useState(false);
   const [processingPayment, setProcessingPayment] = useState({});
   const [activeTab, setActiveTab] = useState("videos");
+  const [videoSort, setVideoSort] = useState("date");
+  const [videoFilter, setVideoFilter] = useState("all");
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [videoSort, videoFilter]);
 
   async function fetchDashboardData() {
     try {
-      // Fetch all videos
-      const { data: videosData, error: videosError } = await supabase
-        .from("videos")
-        .select("*")
-        .order("created_at", { ascending: false });
+      // Fetch all videos with sorting
+      let videoQuery = supabase.from("videos").select("*");
+
+      // Apply filter
+      if (videoFilter !== "all") {
+        videoQuery = videoQuery.eq("status", videoFilter.toUpperCase());
+      }
+
+      // Apply sorting
+      switch (videoSort) {
+        case "duration":
+          videoQuery = videoQuery.order("duration", { ascending: false });
+          break;
+        case "payout":
+          videoQuery = videoQuery.order("duration", { ascending: false }); // Since payout is based on duration
+          break;
+        case "date":
+          videoQuery = videoQuery.order("created_at", { ascending: false });
+          break;
+        case "title":
+          videoQuery = videoQuery.order("title");
+          break;
+      }
+
+      const { data: videosData, error: videosError } = await videoQuery;
 
       if (videosError) throw videosError;
       setVideos(videosData);
@@ -57,6 +81,15 @@ export default function AdminDashboard() {
 
       if (rateError) throw rateError;
       setBaseRate(rateData.base_rate.toString());
+
+      // Fetch working capital
+      const { data: balanceData, error: balanceError } = await supabase
+        .from("balance")
+        .select("working_capital")
+        .single();
+
+      if (balanceError) throw balanceError;
+      setWorkingCapital(balanceData.working_capital.toString());
 
       setLoading(false);
     } catch (error) {
@@ -113,17 +146,39 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleUpdateWorkingCapital(e) {
+    e.preventDefault();
+    setUpdatingCapital(true);
+    try {
+      const numericCapital = parseFloat(workingCapital);
+      if (isNaN(numericCapital) || numericCapital < 0) {
+        throw new Error("Please enter a valid positive number");
+      }
+
+      const { error } = await supabase
+        .from("balance")
+        .update({ working_capital: numericCapital })
+        .eq("id", 1);
+
+      if (error) throw error;
+      toast.success("Working capital updated successfully");
+    } catch (error) {
+      toast.error(error.message || "Failed to update working capital");
+      console.error("Error:", error);
+    } finally {
+      setUpdatingCapital(false);
+    }
+  }
+
   async function handleTranscriptionReview(
     transcriptionId,
     status,
     qualityScore = null,
     feedback = ""
   ) {
-    // Set processing state for this specific transcription
     setProcessingPayment((prev) => ({ ...prev, [transcriptionId]: true }));
 
     try {
-      // Validate quality score for approvals
       if (status === "APPROVED") {
         if (qualityScore === null) {
           qualityScore = parseInt(prompt("Enter quality score (0-100):", "90"));
@@ -134,7 +189,6 @@ export default function AdminDashboard() {
         }
       }
 
-      // Get feedback for rejections
       if (status === "REJECTED" && !feedback) {
         feedback = prompt("Enter feedback for rejection:");
         if (!feedback) {
@@ -143,7 +197,6 @@ export default function AdminDashboard() {
         }
       }
 
-      // First review the transcription
       const { error: reviewError } = await supabase.rpc(
         "review_transcription",
         {
@@ -156,7 +209,6 @@ export default function AdminDashboard() {
 
       if (reviewError) throw reviewError;
 
-      // If approved, process the payment
       if (status === "APPROVED") {
         const session = await supabase.auth.getSession();
         const accessToken = session.data.session?.access_token;
@@ -186,7 +238,6 @@ export default function AdminDashboard() {
         toast.success(`Transcription ${status.toLowerCase()}`);
       }
 
-      // Refresh the dashboard data
       await fetchDashboardData();
     } catch (error) {
       console.error("Review error:", error);
@@ -194,7 +245,6 @@ export default function AdminDashboard() {
         error.message || "Failed to process transcription. Please try again."
       );
     } finally {
-      // Clear processing state for this transcription
       setProcessingPayment((prev) => {
         const newState = { ...prev };
         delete newState[transcriptionId];
@@ -203,25 +253,22 @@ export default function AdminDashboard() {
     }
   }
 
-  async function toggleVideoStatus(videoId, currentStatus) {
+  async function handleDeleteVideo(videoId) {
     try {
-      const newStatus =
-        currentStatus === "AVAILABLE" ? "UNAVAILABLE" : "AVAILABLE";
       const { error } = await supabase
         .from("videos")
-        .update({ status: newStatus })
+        .delete()
         .eq("id", videoId);
 
       if (error) throw error;
 
-      toast.success("Video status updated");
+      toast.success("Video deleted successfully");
       fetchDashboardData();
     } catch (error) {
-      toast.error("Failed to update video status");
+      toast.error("Failed to delete video");
       console.error("Error:", error);
     }
   }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
@@ -268,38 +315,66 @@ export default function AdminDashboard() {
             {/* Payment Configuration Section */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Payment Configuration
+                System Configuration
               </h2>
-              <form onSubmit={handleUpdateBaseRate} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Base Rate ($ per 30 seconds)
-                    <div className="mt-1 relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-gray-500 dark:text-gray-400">
-                          $
-                        </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Base Rate Form */}
+                <form onSubmit={handleUpdateBaseRate} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Base Rate ($ per 30 seconds)
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={baseRate}
+                          onChange={(e) => setBaseRate(e.target.value)}
+                          className="pl-7 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                          required
+                        />
                       </div>
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={baseRate}
-                        onChange={(e) => setBaseRate(e.target.value)}
-                        className="pl-7 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        required
-                      />
-                    </div>
-                  </label>
-                </div>
-                <button
-                  type="submit"
-                  disabled={updatingRate}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={updatingRate}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+                  >
+                    {updatingRate ? "Updating..." : "Update Base Rate"}
+                  </button>
+                </form>
+
+                {/* Working Capital Form */}
+                <form
+                  onSubmit={handleUpdateWorkingCapital}
+                  className="space-y-4"
                 >
-                  {updatingRate ? "Updating..." : "Update Base Rate"}
-                </button>
-              </form>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Working Capital Balance (USD)
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={workingCapital}
+                          onChange={(e) => setWorkingCapital(e.target.value)}
+                          className="pl-7 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                          required
+                        />
+                      </div>
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={updatingCapital}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+                  >
+                    {updatingCapital ? "Updating..." : "Update Working Capital"}
+                  </button>
+                </form>
+              </div>
             </div>
 
             {/* Add New Video Section */}
@@ -361,9 +436,33 @@ export default function AdminDashboard() {
 
             {/* Video Management Section */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Video Management
-              </h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Video Management
+                </h2>
+                <div className="flex space-x-4">
+                  <select
+                    value={videoFilter}
+                    onChange={(e) => setVideoFilter(e.target.value)}
+                    className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <option value="all">All Videos</option>
+                    <option value="available">Available</option>
+                    <option value="claimed">Claimed</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                  <select
+                    value={videoSort}
+                    onChange={(e) => setVideoSort(e.target.value)}
+                    className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <option value="date">Date Added</option>
+                    <option value="duration">Duration</option>
+                    <option value="payout">Estimated Payout</option>
+                    <option value="title">Title</option>
+                  </select>
+                </div>
+              </div>
               <div className="space-y-4">
                 {videos.map((video) => (
                   <div
@@ -381,25 +480,24 @@ export default function AdminDashboard() {
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         Status: {video.status}
                       </p>
+                      <p className="text-sm text-green-600 dark:text-green-400">
+                        Estimated Payout: $
+                        {((video.duration / 30) * parseFloat(baseRate)).toFixed(
+                          2
+                        )}
+                      </p>
                     </div>
                     <button
-                      onClick={() => toggleVideoStatus(video.id, video.status)}
-                      disabled={
-                        video.status !== "AVAILABLE" &&
-                        video.status !== "UNAVAILABLE"
-                      }
+                      onClick={() => handleDeleteVideo(video.id)}
+                      disabled={video.status !== "AVAILABLE"}
                       className={`px-4 py-2 rounded ${
                         video.status === "AVAILABLE"
                           ? "bg-red-600 hover:bg-red-700"
-                          : video.status === "UNAVAILABLE"
-                          ? "bg-green-600 hover:bg-green-700"
                           : "bg-gray-400 cursor-not-allowed"
                       } text-white disabled:opacity-50`}
                     >
                       {video.status === "AVAILABLE"
-                        ? "Disable"
-                        : video.status === "UNAVAILABLE"
-                        ? "Enable"
+                        ? "Delete"
                         : video.status === "CLAIMED"
                         ? "Claimed"
                         : "Completed"}
