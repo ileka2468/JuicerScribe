@@ -40,7 +40,7 @@ Welcome to **JuicerScribe**, a cutting-edge transcription platform designed to t
 - **Database**: PostgreSQL
 - **Transcription Model**: Vosk (planned integration)
 - **Real-Time Predictions**: Alanlysis Data Pipeline (Planned integration pictured below)
-[https://github.com/ileka2468/JuicerScribe/blob/main/system_diagram.png?raw=true]
+![system diagram](https://github.com/ileka2468/JuicerScribe/blob/main/system_diagram.png?raw=true)
 
 ---
 
