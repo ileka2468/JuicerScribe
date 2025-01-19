@@ -118,7 +118,7 @@ class VideoManager {
         `);
 
     try {
-      // Try multiple search approaches to get more variety
+      //  multiple search methods to get more variety
       const searchPromises = [
         // Search with date range
         YouTube.search(channelName, {
@@ -136,7 +136,7 @@ class VideoManager {
           safeSearch: true,
           sortBy: searchStrategy,
         }),
-        // Search with random keywords from common xQc topics
+        // Search with random keywords from common xQc video themes
         YouTube.search(`${channelName} ${this.getRandomKeyword()}`, {
           limit: PAGE_SIZE,
           type: "video",
@@ -326,7 +326,7 @@ class VideoManager {
   // removing excess videos
   async removeExcessVideos(excessValue, baseRate) {
     try {
-      // Get all available videos ordered by duration (remove longer videos first)
+      // Get all available videos ordered by duration (we remove longer videos first to minimize slelection pool volume losses)
       const { data: videos, error } = await supabase
         .from("videos")
         .select("*")
