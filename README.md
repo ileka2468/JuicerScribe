@@ -75,4 +75,4 @@ We welcome contributions! To contribute:
 ---
 ## Contact
 
-For questions or support, feel free to open an issue on JuicerScribe (in the footer).
+For questions or support, feel free to open an issue on JuicerScribe -> [JuicerScribe Support](https://juicerscribe.com/support).
