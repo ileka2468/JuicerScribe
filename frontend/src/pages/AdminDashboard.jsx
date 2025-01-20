@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import SupportSection from "../components/SupportSection";
+import BannerManagement from "../components/BannerManagement";
 
 export default function AdminDashboard() {
   const [videos, setVideos] = useState([]);
@@ -376,6 +377,9 @@ export default function AdminDashboard() {
                 </form>
               </div>
             </div>
+
+            {/* BannerManagement Component */}
+            <BannerManagement />
 
             {/* Add New Video Section */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
