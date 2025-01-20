@@ -1,0 +1,22 @@
+{
+  "name": "chatingest",
+  "version": "1.0.0",
+  "description": "A project to ingest Twitch and Kick chat messages to train transcription models and analyze streaming culture. This includes analyzing chat patterns, emote usage, and metadata to provide accessibility features, generate real-time insights, and predict viewer engagement trends.",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@retconned/kick-js": "^0.4.3",
+    "amqplib": "^0.10.5",
+    "chatingest": "file:",
+    "dotenv": "^16.4.7",
+    "puppeteer": "^24.1.0",
+    "tmi.js": "^1.8.5",
+    "xqcchatingest": "file:"
+  }
+}
