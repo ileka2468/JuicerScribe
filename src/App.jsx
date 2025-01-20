@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { DarkModeProvider } from "./contexts/DarkModeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { DarkModeProvider } from "./contexts/DarkModeContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import LandingPage from "./pages/LandingPage";
@@ -18,6 +18,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import ErrorPage from "./pages/ErrorPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Banner from "./components/Banner";
+import PasswordResetPage from "./pages/PasswordResetPage";
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/support" element={<SupportPage />} />
+                <Route path="/reset-password" element={<PasswordResetPage />} />
 
                 {/* Protected User Routes */}
                 <Route element={<ProtectedRoute />}>
