@@ -36,7 +36,6 @@ export default function App() {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/support" element={<SupportPage />} />
-                <Route path="/reset-password" element={<PasswordResetPage />} />
 
                 {/* Protected User Routes */}
                 <Route element={<ProtectedRoute />}>
@@ -47,6 +46,10 @@ export default function App() {
                   />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/payments" element={<PaymentCenter />} />
+                  <Route
+                    path="/reset-password"
+                    element={<PasswordResetPage />}
+                  />
                 </Route>
 
                 {/* Protected Admin Routes */}
