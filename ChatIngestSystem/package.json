@@ -15,6 +15,7 @@
     "amqplib": "^0.10.5",
     "chatingest": "file:",
     "dotenv": "^16.4.7",
+    "pg": "^8.13.1",
     "puppeteer": "^24.1.0",
     "tmi.js": "^1.8.5",
     "xqcchatingest": "file:"
