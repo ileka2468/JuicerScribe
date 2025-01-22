@@ -18,6 +18,10 @@ import PrivacyPage from "./pages/PrivacyPage";
 import ErrorPage from "./pages/ErrorPage";
 import Banner from "./components/Banner";
 import PasswordResetPage from "./pages/PasswordResetPage";
+import BlogPage from "./pages/BlogPage";
+import BlogDetailPage from "./pages/BlogDetailPage";
+import KnowledgeBaseDetailPage from "./pages/KnowledgeBaseDetailPage";
+import KnowledgeBasePage from "./pages/KnowledgeBasePage";
 
 export default function App() {
   return (
@@ -35,8 +39,6 @@ export default function App() {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/support" element={<SupportPage />} />
-
-                {/* Previously Protected User Routes */}
                 <Route path="/dashboard" element={<UserDashboard />} />
                 <Route
                   path="/transcribe/:videoId"
@@ -45,10 +47,14 @@ export default function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/payments" element={<PaymentCenter />} />
                 <Route path="/reset-password" element={<PasswordResetPage />} />
-
-                {/* Previously Protected Admin Routes */}
                 <Route path="/admin" element={<AdminDashboard />} />
-
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:blogId" element={<BlogDetailPage />} />
+                <Route path="/knowledge-base" element={<KnowledgeBasePage />} />
+                <Route
+                  path="/knowledge-base/:id"
+                  element={<KnowledgeBaseDetailPage />}
+                />
                 <Route path="*" element={<ErrorPage />} />
               </Routes>
             </main>

@@ -3,6 +3,8 @@ import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import SupportSection from "../components/SupportSection";
 import BannerManagement from "../components/BannerManagement";
+import BlogManagement from "../components/BlogManagement";
+import KnowledgeBaseManagement from "../components/KnowledgeBaseManagement";
 
 export default function AdminDashboard() {
   const [videos, setVideos] = useState([]);
@@ -380,6 +382,12 @@ export default function AdminDashboard() {
 
             {/* BannerManagement Component */}
             <BannerManagement />
+
+            {/* BlogManagement Component */}
+            <BlogManagement />
+
+            {/* KnowledgeBaseManagement Component */}
+            <KnowledgeBaseManagement />
 
             {/* Add New Video Section */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">

@@ -1,10 +1,10 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { useDarkMode } from '../contexts/DarkModeContext';
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { UserCircleIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useDarkMode } from "../contexts/DarkModeContext";
+import { Menu, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import { UserCircleIcon, SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 
 export default function Navbar() {
   const { user, signOut } = useAuth();
@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/');
+    navigate("/");
   };
 
   const isAdmin = user?.app_metadata?.is_admin;
@@ -65,7 +65,7 @@ export default function Navbar() {
                           <Link
                             to="/dashboard"
                             className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              active ? "bg-gray-100 dark:bg-gray-700" : ""
                             } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                           >
                             Dashboard
@@ -78,7 +78,7 @@ export default function Navbar() {
                             <Link
                               to="/admin"
                               className={`${
-                                active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                                active ? "bg-gray-100 dark:bg-gray-700" : ""
                               } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                             >
                               Admin Dashboard
@@ -91,7 +91,7 @@ export default function Navbar() {
                           <Link
                             to="/payments"
                             className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              active ? "bg-gray-100 dark:bg-gray-700" : ""
                             } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                           >
                             Payment Center
@@ -103,7 +103,7 @@ export default function Navbar() {
                           <Link
                             to="/profile"
                             className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              active ? "bg-gray-100 dark:bg-gray-700" : ""
                             } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                           >
                             Profile
@@ -115,7 +115,7 @@ export default function Navbar() {
                           <Link
                             to="/support"
                             className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              active ? "bg-gray-100 dark:bg-gray-700" : ""
                             } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                           >
                             Support
@@ -124,10 +124,34 @@ export default function Navbar() {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
+                          <Link
+                            to="/blog"
+                            className={`${
+                              active ? "bg-gray-100 dark:bg-gray-700" : ""
+                            } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
+                          >
+                            Blog
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/knowledge-base"
+                            className={`${
+                              active ? "bg-gray-100 dark:bg-gray-700" : ""
+                            } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
+                          >
+                            Knowledge Base
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
                           <button
                             onClick={handleSignOut}
                             className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              active ? "bg-gray-100 dark:bg-gray-700" : ""
                             } block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                           >
                             Sign out
