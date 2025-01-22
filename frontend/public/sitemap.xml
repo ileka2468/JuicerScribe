@@ -26,6 +26,16 @@
     <priority>0.6</priority>
     <changefreq>monthly</changefreq>
   </url>
+  <url>
+    <loc>https://juicerscribe.com/blog</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://juicerscribe.com/knowledge-base</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+  </url>
   
   <!-- Protected User -->
   <url>
@@ -58,6 +68,20 @@
   <url>
     <loc>https://juicerscribe.com/admin</loc>
     <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+
+  <!-- Blog Posts -->
+  <url>
+    <loc>https://juicerscribe.com/blog/{blogId}</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+
+  <!-- Knowledge Base Articles -->
+  <url>
+    <loc>https://juicerscribe.com/knowledge-base/{id}</loc>
+    <priority>0.7</priority>
     <changefreq>weekly</changefreq>
   </url>
 </urlset>
