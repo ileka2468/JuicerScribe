@@ -192,33 +192,33 @@ export default function UserDashboard() {
 
   async function handleClaimVideo(videoId) {
     try {
-      // First check if user has a completed Stripe account
-      const { data: stripeAccount, error: stripeError } = await supabase
-        .from("stripe_accounts")
-        .select("charges_enabled")
-        .eq("user_id", user.id)
-        .single();
+      // First check if user has a completed Stripe account (disable for ad review)
+      // const { data: stripeAccount, error: stripeError } = await supabase
+      //   .from("stripe_accounts")
+      //   .select("charges_enabled")
+      //   .eq("user_id", user.id)
+      //   .single();
 
-      if (stripeError && stripeError.code !== "PGRST116") throw stripeError;
+      // if (stripeError && stripeError.code !== "PGRST116") throw stripeError;
 
-      if (!stripeAccount || !stripeAccount.charges_enabled) {
-        toast.error(
-          <>
-            Please complete your payment account setup before claiming videos to
-            transcribe.{" "}
-            <Link
-              to="/payments"
-              style={{ textDecoration: "underline", color: "blue" }}
-            >
-              Setup Account
-            </Link>
-          </>,
-          {
-            duration: 5000,
-          }
-        );
-        return;
-      }
+      // if (!stripeAccount || !stripeAccount.charges_enabled) {
+      //   toast.error(
+      //     <>
+      //       Please complete your payment account setup before claiming videos to
+      //       transcribe.{" "}
+      //       <Link
+      //         to="/payments"
+      //         style={{ textDecoration: "underline", color: "blue" }}
+      //       >
+      //         Setup Account
+      //       </Link>
+      //     </>,
+      //     {
+      //       duration: 5000,
+      //     }
+      //   );
+      //   return;
+      // }
 
       // First update video status
       const { error: videoError } = await supabase
