@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// PostgreSQL connection pool
 const pool = new Pool({
   user: process.env.PG_USER,
   host: process.env.PG_HOST,
@@ -36,7 +35,7 @@ async function storeMessage({
 
     const userId = userResult.rows[0].id;
 
-    // Check if the stream exists
+    // Check if a stream exists
     const streamResult = await pool.query(
       `SELECT id FROM streams
        WHERE platform = $1 AND channel = $2
@@ -53,7 +52,7 @@ async function storeMessage({
 
     const streamId = streamResult.rows[0].id;
 
-    // Insert the message
+    // Insert message
     await pool.query(
       `INSERT INTO messages (stream_id, user_id, content, timestamp)
        VALUES ($1, $2, $3, $4)`,
@@ -78,7 +77,7 @@ async function consumeMessages(queueName) {
 
     await channel.assertQueue(queueName, {
       durable: true,
-      arguments: { "x-message-ttl": 900000 }, // TTL in milliseconds (15 minutes)
+      arguments: { "x-message-ttl": 900000 }, // (15 minutes)
     });
 
     console.log(`Listening for messages on queue: ${queueName}`);
@@ -88,10 +87,10 @@ async function consumeMessages(queueName) {
         try {
           const message = JSON.parse(msg.content.toString());
           await storeMessage(message);
-          channel.ack(msg); // Acknowledge message after processing
+          channel.ack(msg);
         } catch (error) {
           console.error("Error processing message:", error.message);
-          channel.nack(msg); // Reject message
+          channel.nack(msg);
         }
       }
     });
@@ -103,7 +102,6 @@ async function consumeMessages(queueName) {
   }
 }
 
-// Start consumers for KickQueue and TwitchQueue
 function startConsumers() {
   consumeMessages("KickQueue");
   consumeMessages("TwitchQueue");
