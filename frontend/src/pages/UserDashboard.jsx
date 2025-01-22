@@ -192,33 +192,33 @@ export default function UserDashboard() {
 
   async function handleClaimVideo(videoId) {
     try {
-      // temp disable  checking for stripe account
       // First check if user has a completed Stripe account
-      // const { data: stripeAccount, error: stripeError } = await supabase
-      //   .from("stripe_accounts")
-      //   .select("charges_enabled")
-      //   .eq("user_id", user.id)
-      //   .single();
+      const { data: stripeAccount, error: stripeError } = await supabase
+        .from("stripe_accounts")
+        .select("charges_enabled")
+        .eq("user_id", user.id)
+        .single();
 
-      // if (stripeError && stripeError.code !== "PGRST116") throw stripeError;
+      if (stripeError && stripeError.code !== "PGRST116") throw stripeError;
 
-      // if (!stripeAccount || !stripeAccount.charges_enabled) {
-      //   toast.error(
-      //     <>
-      //       Please complete your payment account setup before claiming videos.{" "}
-      //       <Link
-      //         to="/payments"
-      //         style={{ textDecoration: "underline", color: "blue" }}
-      //       >
-      //         Setup Account
-      //       </Link>
-      //     </>,
-      //     {
-      //       duration: 5000,
-      //     }
-      //   );
-      //   return;
-      // }
+      if (!stripeAccount || !stripeAccount.charges_enabled) {
+        toast.error(
+          <>
+            Please complete your payment account setup before claiming videos to
+            transcribe.{" "}
+            <Link
+              to="/payments"
+              style={{ textDecoration: "underline", color: "blue" }}
+            >
+              Setup Account
+            </Link>
+          </>,
+          {
+            duration: 5000,
+          }
+        );
+        return;
+      }
 
       // First update video status
       const { error: videoError } = await supabase
@@ -251,10 +251,7 @@ export default function UserDashboard() {
       navigate(`/transcribe/${videoId}`);
       toast.success("Video claimed successfully!");
     } catch (error) {
-      toast.error(
-        "We're not live yet, come back on Friday, January 24th for our beta launch!"
-      );
-      // toast.error("Failed to claim video");
+      toast.error("Failed to claim video");
       console.error("Error:", error);
       // If transcription creation failed, try to rollback the video claim
       if (error.message.includes("transcriptions")) {
