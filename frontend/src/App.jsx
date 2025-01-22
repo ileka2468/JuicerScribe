@@ -16,7 +16,6 @@ import SupportPage from "./pages/SupportPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ErrorPage from "./pages/ErrorPage";
-import ProtectedRoute from "./components/ProtectedRoute";
 import Banner from "./components/Banner";
 import PasswordResetPage from "./pages/PasswordResetPage";
 
@@ -37,25 +36,18 @@ export default function App() {
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/support" element={<SupportPage />} />
 
-                {/* Protected User Routes */}
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/dashboard" element={<UserDashboard />} />
-                  <Route
-                    path="/transcribe/:videoId"
-                    element={<TranscriptionPage />}
-                  />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/payments" element={<PaymentCenter />} />
-                  <Route
-                    path="/reset-password"
-                    element={<PasswordResetPage />}
-                  />
-                </Route>
+                {/* Previously Protected User Routes */}
+                <Route path="/dashboard" element={<UserDashboard />} />
+                <Route
+                  path="/transcribe/:videoId"
+                  element={<TranscriptionPage />}
+                />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/payments" element={<PaymentCenter />} />
+                <Route path="/reset-password" element={<PasswordResetPage />} />
 
-                {/* Protected Admin Routes */}
-                <Route element={<ProtectedRoute requireAdmin />}>
-                  <Route path="/admin" element={<AdminDashboard />} />
-                </Route>
+                {/* Previously Protected Admin Routes */}
+                <Route path="/admin" element={<AdminDashboard />} />
 
                 <Route path="*" element={<ErrorPage />} />
               </Routes>
