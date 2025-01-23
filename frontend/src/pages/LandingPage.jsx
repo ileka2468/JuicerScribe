@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -11,10 +11,13 @@ export default function LandingPage() {
         <div className="text-center">
           <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
             <span className="block">Welcome to</span>
-            <span className="block text-indigo-600 dark:text-indigo-400">JuicerScribe</span>
+            <span className="block text-indigo-600 dark:text-indigo-400">
+              JuicerScribe
+            </span>
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            Earn money by transcribing xQc's content. Join our community of transcribers and help make content more accessible.
+            Earn money by transcribing your favorite streamer's content. Join
+            our community of transcribers and help make content more accessible.
           </p>
           <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
             {user ? (
@@ -40,27 +43,37 @@ export default function LandingPage() {
         <div className="mt-20">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Earn Money</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                Earn Money
+              </h3>
               <p className="mt-2 text-gray-500 dark:text-gray-400">
                 Get paid for every minute of content you transcribe accurately.
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Flexible Schedule</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                Flexible Schedule
+              </h3>
               <p className="mt-2 text-gray-500 dark:text-gray-400">
-                Work whenever you want. Claim videos and transcribe at your own pace.
+                Work whenever you want. Claim videos and transcribe at your own
+                pace.
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Join Community</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                Join Community
+              </h3>
               <p className="mt-2 text-gray-500 dark:text-gray-400">
                 Be part of a growing community of transcribers and earn rewards.
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Make a Difference</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                Make a Difference
+              </h3>
               <p className="mt-2 text-gray-500 dark:text-gray-400">
-                Your transcriptions help train AI models to provide real-time subtitles for deaf viewers during xQc's live streams.
+                Your transcriptions help train AI models to provide real-time
+                subtitles for deaf viewers during live streams.
               </p>
             </div>
           </div>
