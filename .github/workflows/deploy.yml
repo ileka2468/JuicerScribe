@@ -23,7 +23,7 @@ jobs:
             git reset --hard origin/main
 
             cd ~/deploy/orchestrate
-            docker compose down
             docker compose build
             docker compose push
+            docker compose down
             docker compose up -d

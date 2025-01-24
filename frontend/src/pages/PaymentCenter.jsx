@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../lib/supabase";
+import toast from "react-hot-toast";
 
 export default function PaymentCenter() {
   const { user } = useAuth();
@@ -17,21 +17,21 @@ export default function PaymentCenter() {
   async function fetchAccountStatus() {
     try {
       const { data, error } = await supabase
-        .from('stripe_accounts')
-        .select('*')
-        .eq('user_id', user.id)
+        .from("stripe_accounts")
+        .select("*")
+        .eq("user_id", user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error && error.code !== "PGRST116") throw error;
       setAccountStatus(data);
 
       // Fetch payout history if account exists
       if (data?.account_id) {
         const { data: payouts, error: payoutsError } = await supabase
-          .from('payouts')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+          .from("payouts")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
 
         if (payoutsError) throw payoutsError;
         setPayoutHistory(payouts || []);
@@ -39,8 +39,8 @@ export default function PaymentCenter() {
 
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching account status:', error);
-      toast.error('Failed to load account status');
+      console.error("Error fetching account status:", error);
+      toast.error("Failed to load account status");
       setLoading(false);
     }
   }
@@ -48,20 +48,22 @@ export default function PaymentCenter() {
   async function handleCreateAccount() {
     setCreatingLink(true);
     try {
-      const { data, error } = await supabase
-        .functions.invoke('create-stripe-account', {
-          body: { return_url: window.location.href }
-        });
+      const { data, error } = await supabase.functions.invoke(
+        "create-stripe-account",
+        {
+          body: { return_url: window.location.href },
+        }
+      );
 
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('No onboarding URL received');
+        throw new Error("No onboarding URL received");
       }
     } catch (error) {
-      console.error('Error creating account:', error);
-      toast.error('Failed to start account setup');
+      console.error("Error creating account:", error);
+      toast.error("Failed to start account setup");
       setCreatingLink(false);
     }
   }
@@ -69,43 +71,47 @@ export default function PaymentCenter() {
   async function handleResumeOnboarding() {
     setCreatingLink(true);
     try {
-      const { data, error } = await supabase
-        .functions.invoke('create-account-link', {
-          body: { 
+      const { data, error } = await supabase.functions.invoke(
+        "create-account-link",
+        {
+          body: {
             account_id: accountStatus.account_id,
-            return_url: window.location.href
-          }
-        });
+            return_url: window.location.href,
+          },
+        }
+      );
 
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('No account link URL received');
+        throw new Error("No account link URL received");
       }
     } catch (error) {
-      console.error('Error creating account link:', error);
-      toast.error('Failed to resume onboarding');
+      console.error("Error creating account link:", error);
+      toast.error("Failed to resume onboarding");
       setCreatingLink(false);
     }
   }
 
   async function handleLoginToDashboard() {
     try {
-      const { data, error } = await supabase
-        .functions.invoke('create-login-link', {
-          body: { account_id: accountStatus.account_id }
-        });
+      const { data, error } = await supabase.functions.invoke(
+        "create-login-link",
+        {
+          body: { account_id: accountStatus.account_id },
+        }
+      );
 
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('No login link URL received');
+        throw new Error("No login link URL received");
       }
     } catch (error) {
-      console.error('Error creating login link:', error);
-      toast.error('Failed to access dashboard');
+      console.error("Error creating login link:", error);
+      toast.error("Failed to access dashboard");
     }
   }
 
@@ -113,7 +119,9 @@ export default function PaymentCenter() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
         <div className="max-w-4xl mx-auto">
-          <p className="text-center text-gray-500 dark:text-gray-400">Loading payment center...</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            Loading payment center...
+          </p>
         </div>
       </div>
     );
@@ -124,7 +132,9 @@ export default function PaymentCenter() {
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Payout Account Setup</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Payout Account Setup
+          </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             Set up your account to receive payments for transcription work.
           </p>
@@ -132,8 +142,10 @@ export default function PaymentCenter() {
 
         {/* Account Status Card */}
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Account Status</h2>
-          
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            Account Status
+          </h2>
+
           <div className="space-y-4">
             {!accountStatus ? (
               <>
@@ -146,10 +158,20 @@ export default function PaymentCenter() {
                   disabled={creatingLink}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                 >
-                  {creatingLink ? 'Setting up...' : 'Create Your Payout Account'}
+                  {creatingLink
+                    ? "Setting up..."
+                    : "Create Your Payout Account"}
                 </button>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  You'll be redirected to Stripe to securely set up your payout account.
+                  You'll be redirected to Stripe to securely set up your payout
+                  account. Need help? Checkout the{" "}
+                  <a
+                    className="underline"
+                    href="https://juicerscribe.com/knowledge-base/6"
+                  >
+                    Payment Center guide
+                  </a>
+                  .
                 </p>
               </>
             ) : accountStatus.charges_enabled ? (
@@ -165,7 +187,8 @@ export default function PaymentCenter() {
                   Go to Your Payout Dashboard
                 </button>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Manage your bank account, payment details, and payouts directly in your Stripe dashboard.
+                  Manage your bank account, payment details, and payouts
+                  directly in your Stripe dashboard.
                 </p>
               </>
             ) : (
@@ -179,7 +202,7 @@ export default function PaymentCenter() {
                   disabled={creatingLink}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                 >
-                  {creatingLink ? 'Loading...' : 'Resume Account Setup'}
+                  {creatingLink ? "Loading..." : "Resume Account Setup"}
                 </button>
               </>
             )}
@@ -189,8 +212,10 @@ export default function PaymentCenter() {
         {/* Payout History */}
         {accountStatus?.charges_enabled && (
           <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Payout History</h2>
-            
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Payout History
+            </h2>
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
@@ -216,19 +241,25 @@ export default function PaymentCenter() {
                         ${payout.amount.toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          payout.status === 'paid'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
-                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
-                        }`}>
-                          {payout.status.charAt(0).toUpperCase() + payout.status.slice(1)}
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            payout.status === "paid"
+                              ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
+                          }`}
+                        >
+                          {payout.status.charAt(0).toUpperCase() +
+                            payout.status.slice(1)}
                         </span>
                       </td>
                     </tr>
                   ))}
                   {payoutHistory.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                      <td
+                        colSpan={3}
+                        className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
+                      >
                         No payouts yet
                       </td>
                     </tr>
