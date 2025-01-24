@@ -9,7 +9,7 @@ export default function Banner() {
   const location = useLocation();
   const marqueeRef = useRef(null);
 
-  const SCROLL_SPEED = 200; // pixels per second
+  const SCROLL_SPEED = 175; // pixels per second
 
   useEffect(() => {
     async function fetchBanner() {
