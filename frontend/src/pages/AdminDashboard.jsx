@@ -5,6 +5,7 @@ import SupportSection from "../components/SupportSection";
 import BannerManagement from "../components/BannerManagement";
 import BlogManagement from "../components/BlogManagement";
 import KnowledgeBaseManagement from "../components/KnowledgeBaseManagement";
+import AdZoneManagement from "../components/AdZoneManagement";
 
 export default function AdminDashboard() {
   const [videos, setVideos] = useState([]);
@@ -382,6 +383,9 @@ export default function AdminDashboard() {
 
             {/* BannerManagement Component */}
             <BannerManagement />
+
+            {/* AdZoneManagement Component */}
+            <AdZoneManagement />
 
             {/* BlogManagement Component */}
             <BlogManagement />

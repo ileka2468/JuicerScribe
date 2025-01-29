@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import YouTube from "react-youtube";
+import AdZone from "../components/AdZone";
 
 export default function TranscriptionPage() {
   const { videoId } = useParams();
@@ -56,7 +57,7 @@ export default function TranscriptionPage() {
         setTranscriptionId(transcriptionData.id);
         setTranscription(transcriptionData.content);
 
-        // If already submitted, show message and redirect
+        // If already submitted, show message & redirect
         if (transcriptionData.status === "SUBMITTED") {
           toast.error("This transcription has already been submitted");
           navigate("/dashboard");
@@ -127,119 +128,129 @@ export default function TranscriptionPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {video.title}
-          </h1>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Ads (displays vertically on mobile) */}
+        <div className="lg:col-span-3">
+          <AdZone zoneName="transcription-left" containerType="vertical" />
+        </div>
 
-          {/* Payout Information */}
-          <div className="mb-6 bg-green-50 dark:bg-green-900 p-4 rounded-lg">
-            <h2 className="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">
-              Estimated Payout: ${estimatedPayout.toFixed(2)}
-            </h2>
-            <p className="text-green-700 dark:text-green-300">
-              Your transcription will be reviewed for quality. Low-quality
-              submissions may be rejected and will need to be redone. Maintain
-              high accuracy to ensure approval and payment. Points on the global
-              leaderboard are based on transcription quality, video length, and
-              how fast you complete the transcription after claming the video.
-            </p>
-          </div>
+        {/* Main content area */}
+        <div className="lg:col-span-6 space-y-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              {video.title}
+            </h1>
 
-          {/* Instructions */}
-          <div className="mb-6 bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-            <h2 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
-              Transcription Instructions
-            </h2>
-            <ul className="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-2">
-              <li>Only transcribe what xQc says</li>
-              <li>Ignore all other voices (donations, videos, other people)</li>
-              <li>Use proper punctuation and capitalization</li>
-              <li>
-                Include verbal expressions and stutters like "uhm", "uh", "dddd
-                dud dud" etc.
-              </li>
-            </ul>
-          </div>
-
-          {/* YouTube Video Player */}
-          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-            {" "}
-            {/* 16:9 Aspect Ratio */}
-            <div className="absolute top-0 left-0 w-full h-full">
-              <YouTube
-                videoId={video.youtube_id}
-                opts={{
-                  width: "100%",
-                  height: "100%",
-                  playerVars: {
-                    autoplay: 0,
-                    controls: 1,
-                  },
-                }}
-                className="rounded-lg"
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Transcription Form */}
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-            <div>
-              <label
-                htmlFor="transcription"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                style={{ fontSize: "16px" }} // Prevent iOS zoom
-              >
-                Enter your transcription
-              </label>
-              <textarea
-                id="transcription"
-                rows={10}
-                value={transcription}
-                onChange={(e) => setTranscription(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 resize-y"
-                placeholder="Type what you hear..."
-                required
-                style={{ fontSize: "16px" }} // Prevent iOS zoom
-              />
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Word count:{" "}
-                {transcription.trim().split(/\s+/).filter(Boolean).length}
+            {/* Payout Information */}
+            <div className="mb-6 bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+              <h2 className="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">
+                Estimated Payout: ${estimatedPayout.toFixed(2)}
+              </h2>
+              <p className="text-green-700 dark:text-green-300">
+                Your transcription will be reviewed for quality. Low-quality
+                submissions may be rejected and will need to be redone. Keep it
+                accurate for approval and payment. Points on the global
+                leaderboard are based on transcription quality, video length,
+                and how fast you complete the transcription.
               </p>
             </div>
 
-            <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard")}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveDraft}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                Save Draft
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 disabled:opacity-50"
-              >
-                {submitting ? "Submitting..." : "Submit Transcription"}
-              </button>
+            {/* Instructions */}
+            <div className="mb-6 bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+              <h2 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
+                Transcription Instructions
+              </h2>
+              <ul className="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-2">
+                <li>Only transcribe what xQc says</li>
+                <li>
+                  Ignore all other voices (donations, videos, other people)
+                </li>
+                <li>Use proper punctuation and capitalization</li>
+                <li>Include expressions and stutters like "uhm", "uh", etc.</li>
+              </ul>
             </div>
-          </form>
+
+            {/* YouTube Video Player */}
+            <div
+              className="relative w-full"
+              style={{ paddingBottom: "56.25%" }}
+            >
+              <div className="absolute top-0 left-0 w-full h-full">
+                <YouTube
+                  videoId={video.youtube_id}
+                  opts={{
+                    width: "100%",
+                    height: "100%",
+                    playerVars: { autoplay: 0, controls: 1 },
+                  }}
+                  className="rounded-lg"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Transcription Form */}
+            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+              <div>
+                <label
+                  htmlFor="transcription"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  style={{ fontSize: "16px" }}
+                >
+                  Enter your transcription
+                </label>
+                <textarea
+                  id="transcription"
+                  rows={10}
+                  value={transcription}
+                  onChange={(e) => setTranscription(e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 resize-y"
+                  placeholder="Type what you hear..."
+                  required
+                  style={{ fontSize: "16px" }} // Prevent iOS zoom
+                />
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  Word count:{" "}
+                  {transcription.trim().split(/\s+/).filter(Boolean).length}
+                </p>
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => navigate("/dashboard")}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  Save Draft
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900 disabled:opacity-50"
+                >
+                  {submitting ? "Submitting..." : "Submit Transcription"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {/* Right Ads (also vertical on mobile) */}
+        <div className="lg:col-span-3">
+          <AdZone zoneName="transcription-right" containerType="vertical" />
         </div>
       </div>
     </div>
